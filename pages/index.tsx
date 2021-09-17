@@ -1,23 +1,39 @@
-import type { NextPage } from 'next';
-import useSWR from 'swr';
+import React, { ReactNode } from 'react';
+import type { NextPage, GetStaticProps } from 'next';
+import useSWR, { SWRConfig } from 'swr';
 
-const fetcher = async (input: RequestInfo, init?: RequestInit) => {
-  const res = await fetch(input, init);
-  return res.json();
+const API = 'https://jsonplaceholder.typicode.com/posts';
+
+export const getStaticProps: GetStaticProps = async () => {
+  const res = await fetch(API);
+  const data = await res.json();
+
+  return {
+    props: {
+      fallback: {
+        [API]: data,
+      },
+    },
+  };
 };
 
-const Home: NextPage = () => {
-  const { data, error } = useSWR(
-    'https://jsonplaceholder.typicode.com/posts',
-    fetcher
+const Home: NextPage = ({ fallback }) => {
+  return (
+    <SWRConfig value={{ fallback }}>
+      <ChildComponent />
+    </SWRConfig>
   );
+};
 
-  console.log(data, error);
+const ChildComponent = () => {
+  const { data, error } = useSWR(API);
+
+  
 
   if (error) return <div>failed to load</div>;
   if (!data) return <div>loading...</div>;
 
-  return <>Index</>;
+  return <div>{data.length}</div>;
 };
 
 export default Home;
