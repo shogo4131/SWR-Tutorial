@@ -1,6 +1,5 @@
 import React from 'react';
 import type { NextPage } from 'next';
-import useSWR from 'swr';
 import useSWRImmutable from 'swr/immutable';
 
 const Home: NextPage = () => {
